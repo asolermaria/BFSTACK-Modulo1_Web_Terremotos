@@ -13,7 +13,7 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 async function getTerremotos() {
   try {
     const data = await fetch(
-      "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson",
+      "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson",
     ).then((res) => res.json());
 
     return data.features.map((terremoto) => ({
@@ -126,6 +126,54 @@ inputMagnitud.addEventListener("input", async () => {
   markTerremotos(map2, terremotosFiltrados, markers);
 });
 
-//Filtrado por fechas **PENDIENTE**
+//Filtrado por fechas
 const inputFechaInicio = document.getElementById("input-fecha-inicio");
 const inputFechaFin = document.getElementById("input-fecha-fin");
+
+//Función para convertir a objeto fecha y aplicar hora 00:00h
+function normalizeDate(date) {
+  const fecha = new Date(date);
+  fecha.setHours(0, 0, 0, 0);
+  return fecha;
+}
+
+
+inputFechaInicio.addEventListener("change", comprobarFechas);
+inputFechaFin.addEventListener("change", comprobarFechas);
+
+async function comprobarFechas() {
+  //Verificamos que tanto en inputFechaInicio como inputFechaFin se haya seleccionado algún valor y no estén vacíos
+  if (!inputFechaInicio.value || !inputFechaFin.value) return;
+
+  const fechaInicio = normalizeDate(inputFechaInicio.value); //Convertimos el input en objeto fecha y hora 00:00
+  const fechaFin = normalizeDate(inputFechaFin.value); //Convertimos el input en objeto fecha y hora 00:00
+  const fechaActual = new Date(); //Convertimos en objeto la fecha actual
+
+  if (fechaInicio > fechaFin) {
+    alert("La fecha de inicio no puede ser mayor que la fecha de fin.");
+    return;
+  }
+
+  if (fechaInicio > fechaActual || fechaFin > fechaActual) {
+    if (fechaInicio > fechaActual) {
+      alert("La fecha de inicio no puede ser mayor a la fecha actual");
+    }
+    if (fechaFin > fechaActual) {
+      alert("La fecha de fin no puede ser mayor a la fecha actual");
+    }
+    return;
+  }
+
+  const terremotos = await getTerremotos();
+  terremotosFiltrados = terremotos.filter((terremoto) => {
+    return (
+      normalizeDate(new Date(terremoto.Fecha_inicio)) >= fechaInicio &&
+      normalizeDate(new Date(terremoto.Fecha_fin)) <= fechaFin
+    );
+  });
+
+  markers.forEach((marker) => map2.removeLayer(marker));
+  markers = [];
+
+  markTerremotos(map2, terremotosFiltrados, markers);
+}
