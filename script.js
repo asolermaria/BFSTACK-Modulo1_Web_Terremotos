@@ -1,6 +1,6 @@
 //Mapa 1
 var map = L.map("map").setView([20, 0], 2); //Cogemos el elemento "map" del HTML para pintarlo. Con setView, centramos el mapa ([lat, lon], zoom)
-markTerremotos(map); //Llamamos a la función para marcar todos los terremotos en el mapa
+markTerremotos(map, null, [], true); //Llamamos a la función para marcar todos los terremotos en el mapa 1
 
 //Capa del mapa 1
 L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -18,8 +18,8 @@ async function getTerremotos() {
 
     return data.features.map((terremoto) => ({
       Titulo: terremoto.properties.title,
-      Fecha_inicio: new Date(terremoto.properties.time),
-      Fecha_fin: new Date(terremoto.properties.updated),
+      Fecha_inicio: new Date(terremoto.properties.time), //Con new Date pasamos el valor de timestampt (API) a objeto fecha
+      Fecha_fin: new Date(terremoto.properties.updated), //Con new Date pasamos el valor de timestampt (API) a objeto fecha
       Ubicación: terremoto.properties.place,
       Código: terremoto.id,
       Magnitud: terremoto.properties.mag,
@@ -35,7 +35,12 @@ async function getTerremotos() {
 }
 
 //Función para marcar los terremotos y añadir popups de los terremotos en el mapa
-async function markTerremotos(mapa, terremotos = null, markersArray = []) {
+async function markTerremotos(
+  mapa,
+  terremotos = null,
+  markersArray = [],
+  esMapa1 = false,
+) {
   try {
     if (!terremotos) {
       //Si no se pasan terremotos, obtenemos todos
@@ -73,7 +78,7 @@ async function markTerremotos(mapa, terremotos = null, markersArray = []) {
         Ubicación: ${terremoto.Ubicación}<br>
         Código: ${terremoto.Código}<br>
         Magnitud: ${terremoto.Magnitud}<br>
-        `);
+        ${esMapa1 ? `<button id="boton-favorito">Favorito</button>` : ""} `); //Si es mapa1, creamos el botón favorito en el popup
 
       //Añadimos cada marcador al array
       markersArray.push(marker);
@@ -130,18 +135,9 @@ inputMagnitud.addEventListener("input", async () => {
 const inputFechaInicio = document.getElementById("input-fecha-inicio");
 const inputFechaFin = document.getElementById("input-fecha-fin");
 
-//Función para convertir a objeto fecha y aplicar hora 00:00h
-function normalizeDate(date) {
-  const fecha = new Date(date);
-  fecha.setHours(0, 0, 0, 0);
-  return fecha;
-}
-
-
-inputFechaInicio.addEventListener("change", comprobarFechas);
-inputFechaFin.addEventListener("change", comprobarFechas);
-
-async function comprobarFechas() {
+inputFechaInicio.addEventListener("change", filterFechas);
+inputFechaFin.addEventListener("change", filterFechas);
+async function filterFechas() {
   //Verificamos que tanto en inputFechaInicio como inputFechaFin se haya seleccionado algún valor y no estén vacíos
   if (!inputFechaInicio.value || !inputFechaFin.value) return;
 
@@ -149,20 +145,19 @@ async function comprobarFechas() {
   const fechaFin = normalizeDate(inputFechaFin.value); //Convertimos el input en objeto fecha y hora 00:00
   const fechaActual = new Date(); //Convertimos en objeto la fecha actual
 
-  if (fechaInicio > fechaFin) {
+  if (fechaInicio > fechaFin)
     alert("La fecha de inicio no puede ser mayor que la fecha de fin.");
-    return;
-  }
+  if (fechaInicio > fechaActual)
+    alert("La fecha de inicio no puede ser mayor a la fecha actual");
+  if (fechaFin > fechaActual)
+    alert("La fecha de fin no puede ser mayor a la fecha actual");
 
-  if (fechaInicio > fechaActual || fechaFin > fechaActual) {
-    if (fechaInicio > fechaActual) {
-      alert("La fecha de inicio no puede ser mayor a la fecha actual");
-    }
-    if (fechaFin > fechaActual) {
-      alert("La fecha de fin no puede ser mayor a la fecha actual");
-    }
-    return;
-  }
+  if (
+    fechaInicio > fechaFin ||
+    fechaInicio > fechaActual ||
+    fechaFin > fechaActual
+  )
+    return; //Si alguna de las fechas input es mayor a la fecha actual, o si la fecha inicio es mayor a la de fin, paramos la función
 
   const terremotos = await getTerremotos();
   terremotosFiltrados = terremotos.filter((terremoto) => {
@@ -176,4 +171,11 @@ async function comprobarFechas() {
   markers = [];
 
   markTerremotos(map2, terremotosFiltrados, markers);
+}
+
+//Función para convertir a objeto fecha y aplicar hora 00:00h
+function normalizeDate(date) {
+  const fecha = new Date(date);
+  fecha.setHours(0, 0, 0, 0);
+  return fecha;
 }
