@@ -22,6 +22,7 @@ botonFavoritos.addEventListener("click", async () => {
   try {
     //Eliminamos los markers actuales
     markersMapa1.forEach((marker) => marker.remove());
+    markersMapa1 = [];
 
     //Obtenemos los favoritos de Firestore y guardamos en favoritosArray
     const favoritosArray = [];

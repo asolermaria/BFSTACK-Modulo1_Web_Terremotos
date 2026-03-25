@@ -19,25 +19,68 @@
   </head>
 
   <body>
+    <h1>Web Terremotos</h1>
+
     <section id="mapa1">
+      <h2>Terremotos de la última semana</h2>
+
       <button id="boton-todos-terremotos">Mostrar todos los terremotos</button>
       <button id="boton-favoritos">Mostrar mis terremotos favoritos</button>
+
       <div id="map"></div>
     </section>
 
     <section id="mapa2">
-      <label for="fecha_inicio">Magnitud</label>
-      <input type="number" id="input-magnitud" placeholder="Magnitud" />
+      <h2>Filtrado de terremotos</h2>
 
-      <label for="fecha_inicio">Fecha inicio</label>
-      <input type="date" id="input-fecha-inicio" name="fecha_inicio" />
+      <div id="filtro-magnitud">
+        <label for="input-magnitud">Magnitud</label>
+        <input
+          type="number"
+          id="input-magnitud"
+          name="input-magnitud"
+          placeholder="Magnitud"
+        />
+      </div>
 
-      <label for="fecha_fin">Fecha fin</label>
-      <input type="date" id="input-fecha-fin" name="fecha_fin" />
+      <div id="filtro-fechas">
+        <label for="fecha_inicio">Fecha inicio</label>
+        <input type="date" id="input-fecha-inicio" name="fecha_inicio" />
+        <label for="fecha_fin">Fecha fin</label>
+        <input type="date" id="input-fecha-fin" name="fecha_fin" />
+      </div>
 
       <div id="map2"></div>
     </section>
 
+    <section id="autenticacion">
+      <h2>Autenticación</h2>
+
+      <article id="formulario-registro">
+        <h3>Registro</h3>
+        <form id="form-registro">
+          <input type="email" id="correo" placeholder="Email" required />
+          <input type="password" id="password" placeholder="Contraseña" required/>
+          <input type="password" id="password2" placeholder="Repetir contraseña" required/>
+          <button type="submit">Registrarse</button>
+        </form>
+      </article>
+
+      <article id="formulario-login">
+        <h3>Login</h3>
+        <form id="form-inicio-sesion">
+          <input type="email" id="correo2" placeholder="Email" required />
+          <input type="password" id="password3" placeholder="Contraseña"required />
+          <button type="submit">Iniciar sesión</button>
+        </form>
+      </article>
+
+      <article id="formulario-logout">
+        <h3>Sesión</h3>
+        <button id="cerrar-sesion">Cerrar sesión</button>
+      </article>
+    </section>
+    
     <!-- Firebase App -->
     <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-app-compat.js"></script>
     <!-- Firestore y Auth -->
