@@ -179,3 +179,32 @@ function normalizeDate(date) {
   fecha.setHours(0, 0, 0, 0);
   return fecha;
 }
+
+//FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyCPkI7rlte3aSt-xv9e-mXSbpuS72CQqps",
+  authDomain: "primer-proyecto-51aae.firebaseapp.com",
+  projectId: "primer-proyecto-51aae",
+  storageBucket: "primer-proyecto-51aae.firebasestorage.app",
+  messagingSenderId: "656011203905",
+  appId: "1:656011203905:web:0315fc3d8b18ed6edc7dc0",
+};
+
+// Inicializar Firebase
+const app = firebase.initializeApp(firebaseConfig);
+
+// Inicializar Firestore
+const db = firebase.firestore();
+
+// Inicializar Auth
+const auth = firebase.auth();
+
+db.collection("test").add({
+  mensaje: "Hola, Firebase!"
+})
+.then(docRef => {
+  console.log("Conexión OK! Documento agregado con ID:", docRef.id);
+})
+.catch(error => {
+  console.error("Error al probar Firestore:", error);
+});

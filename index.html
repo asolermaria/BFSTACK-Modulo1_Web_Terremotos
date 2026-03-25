@@ -19,21 +19,31 @@
   </head>
 
   <body>
-    <div id="map"></div>
-
-    <section id="filtros-map2">
-
-    <input type="number" id="input-magnitud" placeholder="Magnitud" />
-
-    <label for="fecha_inicio">Fecha inicio</label>
-    <input type="date" id="input-fecha-inicio" name="fecha_inicio"/>
-
-    <label for="fecha_fin">Fecha fin</label>
-    <input type="date" id="input-fecha-fin" name="fecha_fin"/>
-
-    <div id="map2"></div>
-
+    <section id="mapa1">
+      <button>Mostrar todos los terremotos</button>
+      <button>Mostrar mis terremotos favoritos</button>
+      <div id="map"></div>
     </section>
+
+    <section id="mapa2">
+      <label for="fecha_inicio">Magnitud</label>
+      <input type="number" id="input-magnitud" placeholder="Magnitud" />
+
+      <label for="fecha_inicio">Fecha inicio</label>
+      <input type="date" id="input-fecha-inicio" name="fecha_inicio" />
+
+      <label for="fecha_fin">Fecha fin</label>
+      <input type="date" id="input-fecha-fin" name="fecha_fin" />
+
+      <div id="map2"></div>
+    </section>
+
+    <!-- Firebase App -->
+<script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-app-compat.js"></script>
+<!-- Firestore y Auth -->
+<script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-storage-compat.js"></script>
 
     <script src="./script.js"></script>
   </body>
