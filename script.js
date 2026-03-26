@@ -20,18 +20,33 @@ botonTodosTerremotos.addEventListener("click", () => {
 const botonFavoritos = document.getElementById("boton-favoritos");
 botonFavoritos.addEventListener("click", async () => {
   try {
+    const user = auth.currentUser;
+    //Si no hay usuario logueado en la sesión
+    if (!user) {
+      alert("Debes iniciar sesión para ver tus favoritos");
+      return;
+    }
+
     //Eliminamos los markers actuales
     markersMapa1.forEach((marker) => marker.remove());
     markersMapa1 = [];
 
-    //Obtenemos los favoritos de Firestore y guardamos en favoritosArray
+    //Obtenemos los favoritos del usuario de Firestore y guardamos en favoritosArray
     const favoritosArray = [];
-    const querySnapshot = await db.collection("favoritos").get();
-    querySnapshot.forEach((favorito) => {
-      favoritosArray.push(favorito.data());
+    const querySnapshot = await db
+      .collection("favoritos")
+      .where("uid", "==", user.uid)
+      .get();
+
+    querySnapshot.forEach((doc) => {
+      favoritosArray.push({
+        //Guardamos en el array todas las propiedades del terremoto guardado en Firestore
+        id: doc.id,
+        ...doc.data(),
+      });
     });
 
-    //Mostramos los favoritos en el mapa
+    //Mostramos los favoritos del usuario en el mapa
     markTerremotos(map, favoritosArray, markersMapa1, true);
   } catch (error) {
     console.error(error);
@@ -87,7 +102,7 @@ inputFechaInicio.addEventListener("change", filterFechas);
 inputFechaFin.addEventListener("change", filterFechas);
 async function filterFechas() {
   try {
-    //Verificamos que tanto en inputFechaInicio como inputFechaFin se haya seleccionado algún valor y no estén vacíos
+    //Verificamos que tanto en inputFechaInicio como inputFechaFin se haya seleccionado algún valor
     if (!inputFechaInicio.value || !inputFechaFin.value) return;
 
     const fechaInicio = normalizeDate(inputFechaInicio.value); //Convertimos el input en objeto fecha y hora 00:00
@@ -188,21 +203,40 @@ async function markTerremotos(
 
       //Popup del marcador
       marker.bindPopup(`
-        <b>${terremoto.titulo}</b><br>
-        Fecha inicio: ${terremoto.fecha_inicio.toLocaleString()}<br>
-        Fecha fin: ${terremoto.fecha_fin.toLocaleString()}<br>
-        Ubicación: ${terremoto.ubicacion}<br>
-        Código: ${terremoto.codigo}<br>
-        Magnitud: ${terremoto.magnitud}<br>
+        <b>${terremoto.titulo}</b><br><br>
+        Fecha inicio: ${terremoto.fecha_inicio.toLocaleString()}<br><br>
+        Fecha fin: ${terremoto.fecha_fin.toLocaleString()}<br><br>
+        Ubicación: ${terremoto.ubicacion}<br><br>
+        Código: ${terremoto.codigo}<br><br>
+        Magnitud: ${terremoto.magnitud}<br><br>
         ${esMapa1 ? `<button>Favorito</button>` : ""} `); //Si es mapa1, creamos el botón favorito en el popup
 
       //Funcionalidad boton añadir favorito a Firestore
       marker.on("popupopen", (event) => {
         //Cuando se abra el popup del marcador del terremoto
         const botonFavorito = event.popup._contentNode.querySelector("button"); //Guardamos el boton favorito en una variable
-        botonFavorito.addEventListener("click", () => {
+        botonFavorito.addEventListener("click", async () => {
+          //Cuando se haga click en el botón para añadir el terremoto a favoritos
+          const user = auth.currentUser; //Guardamos el usuario actual de la sesión en una variable
+          if (!user) {
+            alert("Debes iniciar sesión para añadir favoritos");
+            return;
+          }
+          //Guardamos en la variable query si el usuario ya ha guardado ese terremoto como favorito
+          const query = await db
+            .collection("favoritos")
+            .where("uid", "==", user.uid)
+            .where("codigo", "==", terremoto.codigo)
+            .get();
+          if (!query.empty) {
+            //Si hay datos en la variable query (el usuario ya ha guardado ese terremoto como favorito)
+            alert("Este terremoto ya está en favoritos");
+            return;
+          }
+          //Si el terremoto no se ha añadido a favoritos, lo guardamos:
           db.collection("favoritos") //Añadimos a coleccion favoritos de firestore
             .add({
+              uid: user.uid,
               titulo: terremoto.titulo,
               fecha_inicio: terremoto.fecha_inicio.toLocaleString(),
               fecha_fin: terremoto.fecha_fin.toLocaleString(),
@@ -211,6 +245,10 @@ async function markTerremotos(
               magnitud: terremoto.magnitud,
               coordenadas: terremoto.coordenadas,
             });
+          alert("Terremoto añadido a favoritos");
+          //Deshabilitamos el boton y le cambiamos el texto
+          botonFavorito.textContent = "Terremoto favorito ⭐";
+          botonFavorito.disabled = true;
         });
       });
 
@@ -230,7 +268,6 @@ function normalizeDate(date) {
 }
 
 //FIREBASE
-
 //Configuración proyecto firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCPkI7rlte3aSt-xv9e-mXSbpuS72CQqps",
@@ -240,15 +277,9 @@ const firebaseConfig = {
   messagingSenderId: "656011203905",
   appId: "1:656011203905:web:0315fc3d8b18ed6edc7dc0",
 };
-
-// Inicializar Firebase
-const app = firebase.initializeApp(firebaseConfig);
-
-// Inicializar Firestore
-const db = firebase.firestore();
-
-// Inicializar Auth
-const auth = firebase.auth();
+const app = firebase.initializeApp(firebaseConfig); //Inicializar Firebase
+const db = firebase.firestore(); //Inicializar Firestore
+const auth = firebase.auth(); //Inicializar Auth
 
 //Registro de usuario en Firebase Auth
 //Firebase Auth hace validaciones automáticas:
@@ -277,9 +308,10 @@ formRegistro.addEventListener("submit", async (event) => {
     alert("Registro exitoso");
     formRegistro.reset();
 
-    //Guardar datos en Firestore en la coleccion usuarios
+    //Guardar datos del usuario en Firestore en la coleccion usuarios
     await db.collection("usuarios").doc(userCredential.user.uid).set({
-      email: email,
+      //El documento será el id del usuario
+      email: email, //El documento contendrá el correo del usuario
     });
   } catch (error) {
     console.error(error);
@@ -310,25 +342,31 @@ formLogin.addEventListener("submit", async (event) => {
 });
 
 //Cerrar sesión de usuario en Firebase Auth
-//Listener de estado del usuario
-auth.onAuthStateChanged((user) => { //Revisa si hay un usuario en la sesión
-  const botonLogout = document.getElementById("cerrar-sesion");
-  const nombreUsuario = document.getElementById("nombre-usuario");
-  if (user) { //Si hay usuario en la sesión
-    botonLogout.style.display = "block"; //Mostramos botonLogout
-    nombreUsuario.textContent = "Bienvenid@, " + user.email + " !";
-    nombreUsuario.style.display = "block";
-  } else { //Si no, lo ocultamos
-    botonLogout.style.display = "none";
-    nombreUsuario.style.display = "none";
-  }
-});
-//Función logout
 document.getElementById("cerrar-sesion").addEventListener("click", async () => {
   try {
     await auth.signOut(); //Cierra la sesión
     alert("Sesión cerrada");
+
+    markersMapa1.forEach((marker) => marker.remove());
+    markersMapa1 = []; //Borramos los marcadores del mapa 1 y el array de marcadores
   } catch (error) {
     console.error(error);
+  }
+});
+
+//Listener de estado del usuario
+auth.onAuthStateChanged((user) => {
+  //Revisa si hay un usuario en la sesión
+  const botonLogout = document.getElementById("cerrar-sesion");
+  const nombreUsuario = document.getElementById("nombre-usuario");
+  if (user) {
+    //Si hay usuario en la sesión
+    botonLogout.style.display = "block"; //Mostramos botonLogout en el HTML
+    nombreUsuario.textContent = "Bienvenid@, " + user.email + " !";
+    nombreUsuario.style.display = "block"; //Mostramos el correo del usuario en el HTML
+  } else {
+    //Si no, los ocultamos
+    botonLogout.style.display = "none";
+    nombreUsuario.style.display = "none";
   }
 });
