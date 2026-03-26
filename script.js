@@ -250,3 +250,85 @@ const db = firebase.firestore();
 // Inicializar Auth
 const auth = firebase.auth();
 
+//Registro de usuario en Firebase Auth
+//Firebase Auth hace validaciones automáticas:
+// - El correo debe tener @ y un dominio válido.
+// - No permite crear dos usuarios con el mismo correo.
+// - La contraseña debe tener al menos 6 caracteres.
+const formRegistro = document.getElementById("form-registro");
+formRegistro.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const email = document.getElementById("correo").value;
+  const password = document.getElementById("password").value;
+  const password2 = document.getElementById("password2").value;
+
+  //Validamos si las contraseñas coinciden
+  if (password !== password2) {
+    alert("Las contraseñas no coinciden");
+    return;
+  }
+  try {
+    //Crear usuario en Firebase Auth
+    const userCredential = await auth.createUserWithEmailAndPassword(
+      email,
+      password,
+    );
+    alert("Registro exitoso");
+    formRegistro.reset();
+
+    //Guardar datos en Firestore en la coleccion usuarios
+    await db.collection("usuarios").doc(userCredential.user.uid).set({
+      email: email,
+    });
+  } catch (error) {
+    console.error(error);
+    alert(error);
+  }
+});
+
+//Inicio de sesión de usuario en Firebase Auth
+const formLogin = document.getElementById("form-inicio-sesion");
+formLogin.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const email = document.getElementById("correo2").value;
+  const password = document.getElementById("password3").value;
+
+  try {
+    //Iniciar sesión en Firebase Auth
+    const userCredential = await auth.signInWithEmailAndPassword(
+      email,
+      password,
+    );
+    alert("Inicio de sesión exitoso");
+    formLogin.reset();
+  } catch (error) {
+    console.error(error);
+    alert(error);
+  }
+});
+
+//Cerrar sesión de usuario en Firebase Auth
+//Listener de estado del usuario
+auth.onAuthStateChanged((user) => { //Revisa si hay un usuario en la sesión
+  const botonLogout = document.getElementById("cerrar-sesion");
+  const nombreUsuario = document.getElementById("nombre-usuario");
+  if (user) { //Si hay usuario en la sesión
+    botonLogout.style.display = "block"; //Mostramos botonLogout
+    nombreUsuario.textContent = "Bienvenid@, " + user.email + " !";
+    nombreUsuario.style.display = "block";
+  } else { //Si no, lo ocultamos
+    botonLogout.style.display = "none";
+    nombreUsuario.style.display = "none";
+  }
+});
+//Función logout
+document.getElementById("cerrar-sesion").addEventListener("click", async () => {
+  try {
+    await auth.signOut(); //Cierra la sesión
+    alert("Sesión cerrada");
+  } catch (error) {
+    console.error(error);
+  }
+});

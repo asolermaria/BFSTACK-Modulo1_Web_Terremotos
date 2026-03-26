@@ -60,8 +60,18 @@
         <h3>Registro</h3>
         <form id="form-registro">
           <input type="email" id="correo" placeholder="Email" required />
-          <input type="password" id="password" placeholder="Contraseña" required/>
-          <input type="password" id="password2" placeholder="Repetir contraseña" required/>
+          <input
+            type="password"
+            id="password"
+            placeholder="Contraseña"
+            required
+          />
+          <input
+            type="password"
+            id="password2"
+            placeholder="Repetir contraseña"
+            required
+          />
           <button type="submit">Registrarse</button>
         </form>
       </article>
@@ -70,17 +80,23 @@
         <h3>Login</h3>
         <form id="form-inicio-sesion">
           <input type="email" id="correo2" placeholder="Email" required />
-          <input type="password" id="password3" placeholder="Contraseña"required />
+          <input
+            type="password"
+            id="password3"
+            placeholder="Contraseña"
+            required
+          />
           <button type="submit">Iniciar sesión</button>
         </form>
       </article>
 
       <article id="formulario-logout">
         <h3>Sesión</h3>
+        <p id="nombre-usuario" style="display: none"></p> <!--Mostrará el nombre del usuario en caso de que tenga activa la sesión en la página-->
         <button id="cerrar-sesion">Cerrar sesión</button>
       </article>
     </section>
-    
+
     <!-- Firebase App -->
     <script src="https://www.gstatic.com/firebasejs/12.11.0/firebase-app-compat.js"></script>
     <!-- Firestore y Auth -->
