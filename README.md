@@ -9,13 +9,13 @@ Proyecto de práctica. Esta aplicación web permite explorar y visualizar terrem
 ## 📸 Capturas de la aplicación
 
 ### Mapa principal y visualización de terremotos
-![Vista general del mapa](assets\mapa1.png)
+![Vista general del mapa](assets/mapa1.png)
 
 ### Filtrado por magnitud y fechas
-![Buscador y filtrado](assets\mapa2.png)
+![Buscador y filtrado](assets/mapa2.png)
 
 ### Autenticación
-![Formularios de usuario](assets\autenticacion.png)
+![Formularios de usuario](assets/autenticacion.png)
 
 ---
 
@@ -57,7 +57,8 @@ Web_Terremotos/
 ├── script.js
 ├── terremotos.json
 ├── README.md
-└── assets/
+├── assets/
+└── Presentacion_Web_Terremotos.pptx
 ```
 
 ---
