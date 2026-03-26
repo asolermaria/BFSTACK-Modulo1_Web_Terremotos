@@ -140,6 +140,8 @@ async function filterFechas() {
   }
 }
 
+//FUNCIONES GENERALES
+
 //Función para recoger los datos de los terremotos de la API
 async function getTerremotos() {
   try {
@@ -209,7 +211,7 @@ async function markTerremotos(
         Ubicación: ${terremoto.ubicacion}<br><br>
         Código: ${terremoto.codigo}<br><br>
         Magnitud: ${terremoto.magnitud}<br><br>
-        ${esMapa1 ? `<button>Favorito</button>` : ""} `); //Si es mapa1, creamos el botón favorito en el popup
+        ${esMapa1 ? `<button>Añadir a favorito</button>` : ""} `); //Si es mapa1, creamos el botón favorito en el popup
 
       //Funcionalidad boton añadir favorito a Firestore
       marker.on("popupopen", (event) => {
@@ -268,6 +270,7 @@ function normalizeDate(date) {
 }
 
 //FIREBASE
+
 //Configuración proyecto firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCPkI7rlte3aSt-xv9e-mXSbpuS72CQqps",

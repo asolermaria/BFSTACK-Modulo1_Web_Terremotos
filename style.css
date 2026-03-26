@@ -2,28 +2,43 @@
 /* LAYOUT GENERAL */
 /* ================= */
 
-html, body {
-    display: flex;
-    flex-direction: column;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
 body {
-    background-color: aliceblue;
+  display: flex;
+  flex-direction: column;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Open Sans",
+    "Helvetica Neue",
+    sans-serif;
+  background-color: aliceblue;
 }
 
 /* ======================================== */
 /*  VARIABLES Y CONFIGURACIONES GLOBALES */
 /* ======================================== */
 
+h1 {
+  text-align: center;
+  background-color: darkblue;
+  color: white;
+  margin: 0;
+  height: 60px;
+  line-height: 60px; /* Centra verticalmente el texto dentro de la altura */
+}
 
 h2 {
   text-align: center;
-  margin-bottom: 30px;
+  margin-top: 30px;
 }
 
 article {
-  flex: 1;
   min-width: 250px;
   max-width: 300px;
   background-color: #f5f5f5;
@@ -32,20 +47,33 @@ article {
   padding: 20px;
 }
 
-article h3 {
-  margin-top: 0;
+button {
+  padding: 10px;
+  background-color: darkblue;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+label {
+  display: block; /*Se pone encima del input*/
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input {
+  width: 250px;
+  margin-bottom: 10px;
+  border: 1px solid grey;
+  border-radius: 4px;
+  padding: 10px;
 }
 
 article form {
   display: flex;
   flex-direction: column;
   gap: 12px;
-}
-
-article input {
-  padding: 10px;
-  border: 1px solid grey;
-  border-radius: 4px;
 }
 
 article button {
@@ -57,7 +85,7 @@ article button {
   cursor: pointer;
 }
 
-article button:hover {
+button:hover {
   background-color: #0056b3;
 }
 
@@ -65,24 +93,39 @@ article button:hover {
 /* IDs y CLASES */
 /* ============== */
 
+#mapa1,
+#mapa2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 #map,
 #map2 {
   height: 500px;
+  width: 80%;
 }
 
-#autenticacion {
-  padding: 20px;
+#botones-mapa1 {
+  display: flex;
+  justify-content: center;
+  margin: 20px;
+  gap: 40px;
+}
+
+#filtros {
+  margin: 20px;
 }
 
 #autenticacion {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
   justify-content: center;
+  gap: 20px;
 }
 
-#autenticacion h2 {
-  flex-basis: 100%; /*Ocupa todo el ancho posible, así no compartiá fila con sus hermanos.*/
+#autenticacion h2{
+  flex-basis: 100%; /*Ocupa todo el ancho posible, así no compartirá fila con sus hermanos.*/
 }
 
 #cerrar-sesion {
@@ -99,7 +142,14 @@ article button:hover {
 /* =========================== */
 
 @media (max-width: 768px) {
-  article {
-    max-width: 100%;
+  #map,
+  #map2 {
+    width: 95%;
+    height: 400px;
+  }
+
+  #botones-mapa1 {
+    flex-direction: column;
+    gap: 10px;
   }
 }
